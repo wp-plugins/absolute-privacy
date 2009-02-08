@@ -6,10 +6,9 @@ Requires at least: 2.7
 Tested up to: 2.7.1
 Stable tag: 1.0
 
-Turns your blog into the ultimate private blog: user moderation, blog lock-down, users can chose their own password and must enter their name when registering.
+Ultimate Privacy: user moderation, blog lock-down, users can chose their own password and must enter their name when registering.
 
 == Description ==
-
 
 Absolute Privacy turns your WordPress blog into a fully private site where you control who has access. It's perfect for family blogs, private communities, and personal websites.
 
