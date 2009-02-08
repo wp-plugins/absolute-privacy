@@ -10,6 +10,7 @@ Turns your blog into the ultimate private blog: user moderation, blog lock-down,
 
 == Description ==
 
+
 Absolute Privacy turns your WordPress blog into a fully private site where you control who has access. It's perfect for family blogs, private communities, and personal websites.
 
 After activating the plugin your registrations are automatically protected. First, the plugin adds new fields to the registration menu which require the registrant to enter their first and last name, and to choose a password. Newly registered members are given a WordPress role created by the plugin called "Unapproved User" and although they are registered and have a password, they are unable to login until approved.
