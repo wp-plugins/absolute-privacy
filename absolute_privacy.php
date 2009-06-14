@@ -4,15 +4,15 @@ Plugin Name: Absolute Privacy
 Plugin URI: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
 Description: Give your blog the most privacy. Forces users to register with their name and to choose a password. Users cannot login until approved by an administrator. Also, gives the option to lock down your site from un-logged in viewers.
 Author: John Kolbert
-Version: 1.0
+Version: 1.1
 Author URI: http://www.johnkolbert.com
 
 Copyright Notice
 
-Copyright © 2009 by John Kolbert
+Copyright 2009 by John Kolbert
 
 Permission is hereby granted, free of charge, to any person obtaining a 
-copy of this software and associated documentation files (the ÒSoftwareÓ), 
+copy of this software and associated documentation files (the "Software"), 
 to deal in the Software without restriction, including without limitation 
 the rights to use, copy, modify, merge, publish, distribute, sublicense, 
 and/or sell copies of the Software, and to permit persons to whom the Software 
@@ -21,7 +21,7 @@ is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all 
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED ÒAS ISÓ, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
 INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
 FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
@@ -350,7 +350,7 @@ class absolutePrivacy {
 					$message .= "Your account with ".get_bloginfo('name')." has been approved. You may login using the following info. \n";
 					$message .= "Username: " . $user->user_login . "\n";
 					$message .= "Password: (not shown)" . "\n";
-					$message .= "URL: " . get_bloginfo('url') . "/wp-login.php";
+					$message .= "URL: " . get_bloginfo('url');
 	
 					@wp_mail($user->user_email, 'Your Account Has Been Approved', $message, $headers);  //email the user telling them they've been approved
 				}
@@ -427,7 +427,7 @@ class absolutePrivacy {
 					</form>';
 		echo $output;
 	}
-
+	
 
 	/**
 	 * lockDown function.
@@ -437,18 +437,22 @@ class absolutePrivacy {
 	 * @return void
 	 */
 	function lockDown(){
-		global $userdata;
+		global $userdata, $wp_version;
 
 		$options = get_option($this->options);
 	
 		if(($options['members_enabled'] == "yes") && (empty($userdata))){
-	 		$requested_url = "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-			$requested_url = str_replace('http://', 'http%3A%2F%2F', $requested_url);
-			$requested_url = str_replace('/', '%2F', $requested_url);
+		
+	 		$requested_url = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] : "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+
+			
+			if($wp_version < 2.8){
+				$requested_url = urlencode($requested_url); //WP 2.8+ encodes the URL
+			}
 
 	 		$url = wp_login_url($requested_url); 
-				wp_redirect($url);
-				header("Status: 302");
+				wp_redirect($url, 302);
+				//header("Status: 302");
 				exit();	
 		}
 		return;
@@ -486,7 +490,10 @@ if (isset($absolutePrivacy)) {
 	 function wp_authenticate($username, $password) {
 		global $wpdb, $error, $absolutePrivacy;
 		$username = sanitize_user($username);
-
+		$password = trim($password);
+		
+		if(!isset($_POST['wp-submit'])) return new WP_Error('user_login', __('<strong>You must be logged in to view this site</strong>.'));;
+		
 		if ( '' == $username ) return new WP_Error('empty_username', __('<strong>ERROR</strong>: The username field is empty.'));
 
 		if ( '' == $password ) return new WP_Error('empty_password', __('<strong>ERROR</strong>: The password field is empty.'));
