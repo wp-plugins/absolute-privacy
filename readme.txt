@@ -3,7 +3,7 @@ Contributors: johnkolbert
 Donate link: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
 Tags: privacy, registration, moderation
 Requires at least: 2.7
-Tested up to: 2.8.1
+Tested up to: 2.8.2
 Stable tag: 1.2
 
 Ultimate Privacy: user moderation, blog lock-down, users can chose their own password and must enter their name when registering.
