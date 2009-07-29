@@ -4,8 +4,8 @@ Plugin Name: Absolute Privacy
 Plugin URI: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
 Description: Give your blog the most privacy. Forces users to register with their name and to choose a password. Users cannot login until approved by an administrator. Also, gives the option to lock down your site from un-logged in viewers.
 Author: John Kolbert
-Version: 1.1
-Author URI: http://www.johnkolbert.com
+Version: 1.2
+Author URI: http://www.johnkolbert.com/
 
 Copyright Notice
 
@@ -240,10 +240,18 @@ class absolutePrivacy {
 	 * @return void
 	 */
 	function optionsPage(){
+		
+			if($_GET['mode'] == "moderate") {
+				include('ap_mod_email.php');
+			return;
+		}
+		
 		global $wpdb;
-
+		$plugin_path = get_bloginfo('wpurl') . '/wp-content/plugins/' . dirname(plugin_basename(__FILE__));
+		
 		if (isset($_POST['update_options'])) {
 	   		$options['members_enabled'] = trim($_POST['members_enabled'],'{}');
+	   		$options['admin_block'] = trim($_POST['admin_block'], '{}');
 	   		
 	   		update_option($this->options, $options);
 		
@@ -255,28 +263,110 @@ class absolutePrivacy {
 		}
 	 
 	
-		$output = '<div class="wrap">
+		?> <div class="wrap">
 					<h2>Absolute Privacy: Options Page</h2>
-    				<p>Created by <a href="http://www.johnkolbert.com/">John Kolbert</a><br />
-					<form method="post" action="">
-		
-					<table class="form-table">
-		   			<tr valign="top">
-				   	<th>Members Only</th>
-		   			<td>  <input type="checkbox" name="members_enabled" value="yes"';
-		   			
-		 if ($options['members_enabled'] == "yes") $output .= " checked ";
-		 
-		 $output .= '/> If checked users must be logged in to view ANY part of your blog. They will be redirected to 
-		 			the page they were looking for after they login<br />This will also protects your site\'s RSS feeds</td>
-		   			</tr>
-      				</table>
-		
-					<div class="submit"><input type="submit" name="update_options" value="Update"  style="font-weight:bold;" /> </div>
-					</form> 
-    				</div>';
+    	
+<div style="float: left; width: 660px; margin: 5px;">	
+		<form method="post" action="">
+
+
+<table class="widefat" cellspacing="0">
+
+	<thead>
+		<tr class="thead">
+			<th scope="col" style="width: 100px;" colspan="2" class="" style="">Plugin Settings</th>
+			<th scope="col">Setting Description:</th>
+		</tr>
+	</thead>
+
+	<tbody id="users" class="list:user user-list">
+		<tr valign="top">
+		   	<th style="width: 150px; padding-top: 3%;">Enable Absolute Privacy:</th>
+			<td style="width: 50px; padding-top: 3%;">  <input type="checkbox" name="members_enabled" value="yes" <?php if ($options['members_enabled'] == "yes") echo " checked "; ?> /> Yes </td>
+			<td>If checked users must be logged in to view ANY part of your blog. They will be redirected to the page they were looking for after they login. This will also protects your site's RSS feeds.</td>
+		</tr>
+		<tr>
+			<th style="padding-top: 3%;">Block Admin Access:</th>
+			<td style="padding-top: 3%;"><input type="checkbox" name="admin_block" value="yes" <?php if ($options['admin_block'] == "yes") echo " checked "; ?> /> Yes</td>
+			<td>This blocks subscribers from viewing any administrative pages, such as their profile page or the dashboard. If they try to access an administrative page they will be redirected to the homepage.</td>
+		</tr>
+
+	</tbody>
+</table>
+	<div class="clear"></div>	
+	<div class="submit"><input type="submit" name="update_options" value="Update"  style="font-weight:bold;" /> </div>
+
+</div>
+
+<div style="float: left; width: 300px; margin: 5px; ">
+<table name="pl_donate" class="widefat fixed" style="margin-bottom: 10px;" cellspacing="0">
+
+	<thead>
+		<tr class="thead">
+			<th scope="col" style="width: 100px;"><img style="margin-top: -5px; margin-right: 3px; float: left;" src="<?php echo $plugin_path; ?>/img/LinkBack.png" alt="" />How To Support This Plugin</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr>
+			<td>
+				<ul style="font-size: 1.0em;">
+					<li><a href="http://www.johnkolbert.com/donate/?plugin=absolute-privacy" title="Donate" target="_blank">Donate to support development</a></li>
+					<li><a href="http://www.wordpress.org/extend/plugins/absolute-privacy/" title="Rate">Rate this plugin on WP.org</a></li>					
+				</ul>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<!-- #pl_donate -->
+
+<table name="pl_help" class="widefat fixed" style="margin-bottom: 10px;" cellspacing="0">
+
+	<thead>
+		<tr class="thead">
+			<th scope="col" class="" style=""><img style="margin-top: -5px; margin-right: 3px; float: left;" src="<?php echo $plugin_path; ?>/img/help.png" alt="" /> Plugin Help</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr >
+			<td>
+				<ul style="font-size: 1.0em;">
+					<li><a href="http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy/" title="Go to Plugin Homepage">Plugin Homepage</a></li>
+					<li><a href="http://www.johnkolbert.com/forum/absolute-privacy/" title="Go to Support Forum">Plugin Support Forum</a></li>
+					<li><a href="http://www.johnkolbert.com/contact/estimate/" title="Hire Me!">Hire me to customize this plugin</a></li>
+					
+				</ul>
+			</td>
+		</tr>
+	</tbody>
+</table>	
+<!-- #pl_help -->
+
+<table name="pl_author" class="widefat fixed" cellspacing="0">
+
+	<thead>
+		<tr class="thead">
+			<th scope="col" style="width: 100px;" class="" style=""><img style="margin-top: -5px; margin-right: 3px; float: left;" src="<?php echo $plugin_path; ?>/img/info.png" alt="" />Plugin Author</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align: center; font-size: 1.2em;">Plugin created by <a href="http://www.johnkolbert.com/" title="John Kolbert WordPress Consulting">John Kolbert</a><br />
+				<span style="font-size: 0.8em;">Need Help? <a href="http://www.johnkolbert.com/contact/estimate/" title="Hire Me">Hire me.</a><br />
+				<a href="http://www.twitter.com/johnkolbert" title="Follow Me!">Follow me on Twitter!</a><br /></span>
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>	<!-- #pl_author -->
+
+</div>
+</div>
+    	<?php
     		
-		echo $output;
 	}
 
 
@@ -444,7 +534,6 @@ class absolutePrivacy {
 		if(($options['members_enabled'] == "yes") && (empty($userdata))){
 		
 	 		$requested_url = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] : "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-
 			
 			if($wp_version < 2.8){
 				$requested_url = urlencode($requested_url); //WP 2.8+ encodes the URL
@@ -452,15 +541,29 @@ class absolutePrivacy {
 
 	 		$url = wp_login_url($requested_url); 
 				wp_redirect($url, 302);
-				//header("Status: 302");
 				exit();	
 		}
 		return;
 	}
-
-
 	
-	
+	function adminLockDown(){
+		global $userdata, $userlevel;
+		
+		if(!is_admin() || empty($userdata)) return; 
+		//if it's not an admin page or the user isn't logged in at all, we don't need this
+		
+		$options= get_option($this->options);
+		
+		$user_role = new WP_User($userdata->ID);
+		$capabilities = $this->capabilities;
+		 
+		if ($options['admin_block'] == "yes" && array_key_exists('subscriber', $user_role->$capabilities)){
+	 		$url = get_bloginfo('url'); 
+			wp_redirect($url, 302);
+			exit();	
+		}		
+	}
+		
 } // end class declaration
 } // end !class_exists check
 
@@ -478,21 +581,30 @@ if (isset($absolutePrivacy)) {
 	add_filter( 'registration_errors', array(&$absolutePrivacy, 'checkRegErrors')); //adds registration form error checks
 	add_action('user_register', array(&$absolutePrivacy, 'addNewUser')); //adds registration info to database
 
-	add_action('admin_menu', array(&$absolutePrivacy, 'installOptionsMenu'));
-	add_action('admin_menu', array(&$absolutePrivacy, 'moderateMenu'));
+	add_action('admin_menu', array(&$absolutePrivacy, 'installOptionsMenu')); //install the options menu
+	add_action('admin_menu', array(&$absolutePrivacy, 'moderateMenu')); 
 	add_action('template_redirect', array(&$absolutePrivacy, 'lockDown'));
+	add_action('init', array(&$absolutePrivacy, 'adminLockDown'), 0);
+	add_action('login_head', 'rsd_link');
 	
+}
+
 	
 	
 //non class functions (pluggable)
-
-	if(!function_exists('wp_authenticate')) {
+if(!function_exists('wp_authenticate')) {
 	 function wp_authenticate($username, $password) {
 		global $wpdb, $error, $absolutePrivacy;
 		$username = sanitize_user($username);
 		$password = trim($password);
+
+		$user = apply_filters('authenticate', null, $username, $password);
+
+        if(is_wp_error($user)) {
+            return new WP_Error(403, __('You must login to view this site.'));
+        }
 		
-		if(!isset($_POST['wp-submit'])) return new WP_Error('user_login', __('<strong>You must be logged in to view this site</strong>.'));;
+		if ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST ) return $user; //allows the XML-RPC protocol for remote publishing						
 		
 		if ( '' == $username ) return new WP_Error('empty_username', __('<strong>ERROR</strong>: The username field is empty.'));
 
@@ -504,14 +616,13 @@ if (isset($absolutePrivacy)) {
 			do_action( 'wp_login_failed', $username );
 			return new WP_Error('invalid_username', __('<strong>ERROR</strong>: Invalid login info.'));
 		}
-		
-	
-			$user_role = new WP_User($user->ID);
 
-			$capabilities = $absolutePrivacy->capabilities;
-			if (array_key_exists($absolutePrivacy->role, $user_role->$capabilities)) {  //if the user's role is listed as "unapproved"
-				return new WP_Error('unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved."));
-			}
+		$user_role = new WP_User($user->ID);
+
+		$capabilities = $absolutePrivacy->capabilities;
+		if (array_key_exists($absolutePrivacy->role, $user_role->$capabilities)) {  //if the user's role is listed as "unapproved"
+			return new WP_Error('unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved."));
+		}
 		
 
 
@@ -527,7 +638,9 @@ if (isset($absolutePrivacy)) {
 		}
 
 		return new WP_User($user->ID);
+		
 	 }
+	 
 	}
 
 /* A lot of below was modified quite heavily from "New User Email Set Up"
@@ -620,7 +733,7 @@ By: Alex Cragg
     		$message .= "Username: " . $user_login . "\n";
 	    	$message .= "Email: " . $user_email;
 				$message .= "\n" . "This user cannot login until you approve their account." . "\n \n" .
-							"Click the following link to approve this user: " .  get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=' . dirname(plugin_basename(__FILE__)) . '/ap_mod_email.php&id='.$user_id;
+							"Click the following link to approve this user: " .  get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=' . dirname(plugin_basename(__FILE__)) . '/absolute_privacy.php&mode=moderate&id='.$user_id;
 
 		@newuser_mail(get_option('admin_email'), $subject, $message, $headers);
 
@@ -639,7 +752,8 @@ By: Alex Cragg
 		
 		newuser_mail($user_email, $subject, $message, $headers);
 	 }
-	}
+	
 
 }
+
 ?>
