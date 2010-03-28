@@ -2,9 +2,9 @@
 /*
 Plugin Name: Absolute Privacy
 Plugin URI: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
-Description: Give your blog the most privacy. Forces users to register with their name and to choose a password. Users cannot login until approved by an administrator. Also, gives the option to lock down your site from un-logged in viewers.
+Description: Give your blog absolute privacy. Forces users to register with their name and to choose a password (do not forget to enable registrations). Users cannot login until approved by an administrator. Also, gives the option to lock down your site from non-logged in viewers. 
 Author: John Kolbert
-Version: 1.2
+Version: 1.3
 Author URI: http://www.johnkolbert.com/
 
 Copyright Notice
@@ -27,6 +27,8 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 DEALINGS IN THE SOFTWARE.
+
+Build: 927
 */
 
 
@@ -47,7 +49,7 @@ class absolutePrivacy {
 
 		$this->capabilities = $wpdb->prefix . "capabilities";
 		$this->role = "unapproved"; 							//do not change this or bad things will happen to good people
-		$this->role_ref = "a:1:{s:10:\"unapproved\";b:1;}"; 	//leave it alone
+		$this->role_ref = "unapproved"; 	//leave it alone
 		$this->rolename = "Unapproved User";					//Role name for unapproved users. Change this if you like (will require to deactivate and reactivate the plugin to register)
 		$this->options = "absolute_privacy"; 					//name for options array();
 		$this->default_role = "absolute_privacy_default"; 		//stores the default role on plugin installation (usually "Subscriber")
@@ -64,6 +66,40 @@ class absolutePrivacy {
 		global $wp_roles;
 		$default = get_option('default_role');
 		
+		/* Let's set the default options if they don't exist */
+		$options = get_option($this->options);
+		if(!$options){
+
+/* This section looks a little wonky here, but it has to for proper formatting in the textarea boxes */			
+$to_update = array( 'members_enabled' => 'yes', // turn on the lockdown
+'rss_control' => 'off', //disable the RSS
+'pending_welcome_email_subject' => 'Your account with ' . stripslashes(get_option('blogname')) . ' is under review',
+'pending_welcome_message' => 'Hi %name%, 
+Thanks for registering for %blogname%! Your registration is currently being reviewed. You will not be able to login until it has been approved. You will receive an email at that time. Thanks for your patience. 
+
+Sincerely,
+
+%blogname%',
+'account_approval_email_subject' => 'Your account has been approved!',
+'account_approval_message' => 'Your registration with %blogname% has been approved!
+
+Your may login using the following information:
+
+Username: %username%
+Password: (hidden)
+URL: %blogurl%/wp-login.php',
+'admin_approval_email_subject' => 'A new user is waiting approval',
+'admin_approval_message' => 'A new user has registered for %blogname% and is waiting your approval. You may approve or delete them here: %approval_url%
+
+This user cannot log in until you approve them.'		  
+							);
+							
+			foreach($to_update as $key => $value){
+				$options[$key] = $value;
+			}
+			update_option($this->options, $options);
+		}
+										
 		$role = get_role($this->role);
 		if(!$role) { 
 			$wp_roles->add_role($this->role, $this->rolename); //create the unapproved role
@@ -124,9 +160,9 @@ class absolutePrivacy {
 	function registrationBox(){ 
 		$options = get_option($this->options);
 		$output = '<p><label>First Name:<br />
-					<input type="text" name="first_name" id="first_name" class="input" value="' . attribute_escape(stripslashes($_POST['first_name'])) . '" size="25" tabindex="70" /></label></p>
+					<input type="text" name="first_name" id="first_name" class="input" value="' . (isset($_POST['first_name']) ? attribute_escape(stripslashes($_POST['first_name'])) : '' ) . '" size="25" tabindex="70" /></label></p>
 					<p><label>Last Name:<br />
-					<input type="text" name="last_name" id="last_name" class="input" value="' . attribute_escape(stripslashes($_POST['last_name'])) . '" size="25" tabindex="80" /></label></p>
+					<input type="text" name="last_name" id="last_name" class="input" value="' . (isset($_POST['last_name']) ? attribute_escape(stripslashes($_POST['last_name'])) : '' ) . '" size="25" tabindex="80" /></label></p>
 				
 					<p><label>Password:<br />
 					<input type="password" name="pswd1" id="pswd1" class="input" size="25" tabindex="91"/></label></p>
@@ -199,8 +235,8 @@ class absolutePrivacy {
 		update_usermeta($user_id, 'first_name', attribute_escape(stripslashes($_POST['first_name'])));
 		update_usermeta($user_id, 'last_name', attribute_escape(stripslashes($_POST['last_name'])));
 
-								$user_role = new WP_User( $user->ID );
-								$user_role->set_role($this->role);
+		$user_role = new WP_User($user_id);
+		$user_role->set_role($this->role);
 			
 		if(!empty($_POST['pswd1'])){
 			$_POST['pswd1'] = wp_set_password(attribute_escape(stripslashes($_POST['pswd1'])), $user_id);
@@ -235,15 +271,14 @@ class absolutePrivacy {
 	 * optionsPage function.
 	 * Displays the settings page 
 	 *
-	 * TODO: let user chose default email message on approval/regsitration
 	 * @access public
 	 * @return void
 	 */
 	function optionsPage(){
 		
-			if($_GET['mode'] == "moderate") {
-				include('ap_mod_email.php');
-			return;
+		if( isset($_GET['mode']) && ($_GET['mode'] == "moderate") ) {
+			include('ap_mod_email.php');
+		return;
 		}
 		
 		global $wpdb;
@@ -251,8 +286,19 @@ class absolutePrivacy {
 		
 		if (isset($_POST['update_options'])) {
 	   		$options['members_enabled'] = trim($_POST['members_enabled'],'{}');
+	   		$options['redirect_page'] = trim($_POST['redirect_page'],'{}');
+	   		$options['allowed_pages'] = trim($_POST['allowed_pages'],'{}');
 	   		$options['admin_block'] = trim($_POST['admin_block'], '{}');
+	   		$options['rss_control'] = trim($_POST['rss_control'], '{}');
+	   		$options['rss_characters'] = trim($_POST['rss_characters'], '{}');
 	   		
+	   		$options['pending_welcome_email_subject'] = trim(stripslashes($_POST['pending_welcome_email_subject']), '{}');
+	   		$options['pending_welcome_message'] = trim(stripslashes($_POST['pending_welcome_message']), '{}');
+	   		$options['account_approval_email_subject'] = trim(stripslashes($_POST['account_approval_email_subject']), '{}');
+	   		$options['account_approval_message'] = trim(stripslashes($_POST['account_approval_message']), '{}');
+	   		$options['admin_approval_email_subject'] = trim(stripslashes($_POST['admin_approval_email_subject']), '{}');
+	   		$options['admin_approval_message'] = trim(stripslashes($_POST['admin_approval_message']), '{}');
+
 	   		update_option($this->options, $options);
 		
 		// Show a message to say we've done something
@@ -264,9 +310,10 @@ class absolutePrivacy {
 	 
 	
 		?> <div class="wrap">
-					<h2>Absolute Privacy: Options Page</h2>
+			<div id="icon-plugins" class="icon32"></div>
+			<h2>Absolute Privacy: Options Page</h2>
     	
-<div style="float: left; width: 660px; margin: 5px;">	
+<div style="float: left; width: 65%; margin: 5px;">	
 		<form method="post" action="">
 
 
@@ -274,31 +321,102 @@ class absolutePrivacy {
 
 	<thead>
 		<tr class="thead">
-			<th scope="col" style="width: 100px;" colspan="2" class="" style="">Plugin Settings</th>
+			<th scope="col" style="width: 100px;" colspan="2" class="" style="">General Settings</th>
 			<th scope="col">Setting Description:</th>
 		</tr>
 	</thead>
 
 	<tbody id="users" class="list:user user-list">
 		<tr valign="top">
-		   	<th style="width: 150px; padding-top: 3%;">Enable Absolute Privacy:</th>
-			<td style="width: 50px; padding-top: 3%;">  <input type="checkbox" name="members_enabled" value="yes" <?php if ($options['members_enabled'] == "yes") echo " checked "; ?> /> Yes </td>
-			<td>If checked users must be logged in to view ANY part of your blog. They will be redirected to the page they were looking for after they login. This will also protects your site's RSS feeds.</td>
+		   	<th style="width: 150px; padding-top: 2%;">Lockdown Website:</th>
+			<td style="width: 50px; padding-top: 1.5%;">  <input type="checkbox" name="members_enabled" value="yes" <?php if ($options['members_enabled'] == "yes") echo " checked "; ?> /> Yes </td>
+			<td>If checked users must be logged in to view your blog. They will be redirected to the page they were looking for after they login.</td>
 		</tr>
 		<tr>
-			<th style="padding-top: 3%;">Block Admin Access:</th>
+			<th>Redirect Non-logged in Users To:</th>
+			<td style="padding-top: 2.5%;"><input type="text" name="redirect_page" id="redirect_page" style="width: 28px;" value="<?php echo $options['redirect_page']; ?>" /></td>
+			<td>By default, non-logged in users will be redirected to the login form. Alternatively, you can enter a page ID here that you want non-logged in users to be redirected to instead.</td>
+		</tr>
+
+		<tr>
+			<th>Allowed Pages:</th>
+			<td style="padding-top: 2.5%;"><input type="text" name="allowed_pages" id="allowed_pages" style="width: 58px;" value="<?php echo $options['allowed_pages']; ?>" /></td>
+			<td>List page IDs separated by a comma (eg: 2,19,12). These pages will be accessible to non-logged in users.</td>
+		</tr>
+
+		<tr>
+			<th style="padding-top: 1%;">Block Admin Access:</th>
 			<td style="padding-top: 3%;"><input type="checkbox" name="admin_block" value="yes" <?php if ($options['admin_block'] == "yes") echo " checked "; ?> /> Yes</td>
 			<td>This blocks subscribers from viewing any administrative pages, such as their profile page or the dashboard. If they try to access an administrative page they will be redirected to the homepage.</td>
 		</tr>
 
+		<tr>
+			<th>RSS Control:</th>
+			<td colspan="2">
+				<input type="radio" name="rss_control" value="off" <?php if ($options['rss_control'] == "off") echo 'checked'; ?> /> RSS Disabled &nbsp; &nbsp;
+				<input type="radio" name="rss_control" value="on" <?php if ($options['rss_control'] == "on") echo 'checked'; ?> /> RSS On &nbsp; &nbsp;
+				<input type="radio" name="rss_control" value="headline" <?php if ($options['rss_control'] == "headline") echo 'checked'; ?> /> Limited to headlines &nbsp; &nbsp;
+				<input type="radio" name="rss_control" value="excerpt" <?php if ($options['rss_control'] == "excerpt") echo 'checked'; ?> /> Limited to <input type="text" name="rss_characters" id="rss_characters" value="<?php echo $options['rss_characters']; ?>" style="width: 32px;" /> Characters
+				<br />Viewing your website's RSS feed does not require the user to login. Thus your RSS feed is publicly accessible if it is enabled. You may disable or limit the RSS feed above.
+			</td>
+			
+		</tr>
 	</tbody>
+	
 </table>
+
+<br clear="all" />
+
+<table class="widefat" cellspacing="0">
+
+	<thead>
+		<tr class="thead">
+			<th scope="col" style="width: 100px;" colspan="2" class="" style="">Message Settings</th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+
+	<tbody id="users" class="list:user user-list">
+		<tr valign="top">
+		   	<th style="width: 150px; padding-top: 2%;">Pending Welcome Message: <br /><br /><span style="font-weight: lighter; font-size: 10px;">This message is sent to the user immediately after they register & prior to approval.</span></th>
+			<td colspan="2"> 
+				Email Subject:<br />
+				<input type="text" name="pending_welcome_email_subject" id="pending_welcome_email_subject" value="<?php echo stripslashes($options['pending_welcome_email_subject']); ?>" style="width: 100%;" /><br />
+				Email Message:<br />
+				<textarea name="pending_welcome_message" id="pending_welcome_message" style="width: 100%;" rows="5"><?php echo stripslashes($options['pending_welcome_message']); ?></textarea>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+		   	<th style="width: 150px; padding-top: 2%;">Account Approval Message: <br /><br /><span style="font-weight: lighter; font-size: 10px;">This message is sent to the user immediately after their account has been approved.</span></th>
+			<td colspan="2"> 
+				Email Subject:<br />
+				<input type="text" name="account_approval_email_subject" id="account_approval_email_subject" value="<?php echo stripslashes($options['account_approval_email_subject']); ?>" style="width: 100%;" /><br />
+				Email Message:<br />
+				<textarea name="account_approval_message" id="account_approval_message" style="width: 100%;" rows="5"><?php echo stripslashes($options['account_approval_message']); ?></textarea>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+		   	<th style="width: 150px; padding-top: 2%;">Admin Notification Message: <br /><br /><span style="font-weight: lighter; font-size: 10px;">This message is sent to the administrator after a new registration is waiting approval.</span></th>
+			<td colspan="2">
+				Email Subject:<br />
+				<input type="text" name="admin_approval_email_subject" id="admin_approval_email_subject" value="<?php echo stripslashes($options['admin_approval_email_subject']); ?>" style="width: 100%;" /><br />
+				Email Message:<br /> 
+				<textarea name="admin_approval_message" id="admin_approval_message" style="width: 100%;" rows="5"><?php echo stripslashes($options['admin_approval_message']); ?></textarea>
+			</td>
+		</tr>
+	</tbody>
+	
+</table>
+
+
 	<div class="clear"></div>	
 	<div class="submit"><input type="submit" name="update_options" value="Update"  style="font-weight:bold;" /> </div>
 
 </div>
 
-<div style="float: left; width: 300px; margin: 5px; ">
+<div style="float: left; width: 30%; margin: 5px; ">
 <table name="pl_donate" class="widefat fixed" style="margin-bottom: 10px;" cellspacing="0">
 
 	<thead>
@@ -333,8 +451,7 @@ class absolutePrivacy {
 			<td>
 				<ul style="font-size: 1.0em;">
 					<li><a href="http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy/" title="Go to Plugin Homepage">Plugin Homepage</a></li>
-					<li><a href="http://www.johnkolbert.com/forum/absolute-privacy/" title="Go to Support Forum">Plugin Support Forum</a></li>
-					<li><a href="http://www.johnkolbert.com/contact/estimate/" title="Hire Me!">Hire me to customize this plugin</a></li>
+					<li><a href="http://www.mammothapps.com/contact/" title="Hire Me!">Hire me to customize this plugin</a></li>
 					
 				</ul>
 			</td>
@@ -354,8 +471,8 @@ class absolutePrivacy {
 	<tbody>
 		<tr>
 			<td>
-				<p style="text-align: center; font-size: 1.2em;">Plugin created by <a href="http://www.johnkolbert.com/" title="John Kolbert WordPress Consulting">John Kolbert</a><br />
-				<span style="font-size: 0.8em;">Need Help? <a href="http://www.johnkolbert.com/contact/estimate/" title="Hire Me">Hire me.</a><br />
+				<p style="text-align: center; font-size: 1.2em;">Plugin created by <a href="http://www.johnkolbert.com/" title="John Kolbert">John Kolbert</a><br />
+				<span style="font-size: 0.8em;">Need Help? <a href="http://www.mammothapps.com/contact/" title="Hire Me">Hire me.</a><br />
 				<a href="http://www.twitter.com/johnkolbert" title="Follow Me!">Follow me on Twitter!</a><br /></span>
 				</p>
 			</td>
@@ -365,9 +482,51 @@ class absolutePrivacy {
 
 </div>
 </div>
-    	<?php
+<?php
     		
 	}
+	
+	function handleEmail($user_id, $type){
+
+		$options = get_option($this->options);
+		$user = get_userdata($user_id); //object with user info
+
+		switch($type){
+			case('pending_welcome'):
+				$to_email = $user->user_email;
+				$subject = $options['pending_welcome_email_subject'];
+				$message = $options['pending_welcome_message'];
+				break;
+		
+			case('account_approved'):
+				$to_email = $user->user_email;
+				$subject = $options['account_approval_email_subject'];
+				$message = $options['account_approval_message'];
+				break;
+		
+			case('admin_notification'):
+				$to_email = get_bloginfo('admin_email');
+				$subject = $options['admin_approval_email_subject'];
+				$message = $options['admin_approval_message'];
+				break;
+		}
+		
+	
+		$replace = array('%username%' => $user->user_login,
+						 '%name%' => $user->display_name,
+						 '%blogname%' =>  get_bloginfo('name'),
+						 '%blogurl%' => get_bloginfo('url'),
+						 '%approval_url%' => get_bloginfo('url') . '/wp-admin/options-general.php?page=' . dirname(plugin_basename(__FILE__)) . '/absolute_privacy.php&mode=moderate&id='.$user_id
+						 );
+					 
+		$email_body = strtr(stripslashes($message), $replace); //get email body and replace variables
+	
+		$headers = "MIME-Version: 1.0\n" .
+				   "From: " . get_option('blogname') . " <" . get_option('admin_email') . ">";   
+		wp_mail( $to_email, $subject, $email_body, $headers);
+		
+		return;
+}
 
 
 	/**
@@ -397,6 +556,7 @@ class absolutePrivacy {
 	 */
 	function moderateUsers(){
 		global $wpdb;
+		$options = get_option($this->options);
 		
 		if (function_exists('current_user_can')) {
 			if (!current_user_can('manage_options')) wp_die('You are not able to do that');
@@ -407,7 +567,7 @@ class absolutePrivacy {
 		}
 
 		//get all users who are unapproved
-		$query = "SELECT user_id FROM ".$wpdb->usermeta." WHERE meta_key = '" . $this->capabilities . "' AND meta_value = '" . $this->role_ref . "';";
+		$query = "SELECT user_id FROM ".$wpdb->usermeta." WHERE meta_key = '" . $this->capabilities . "' AND meta_value LIKE '%" . $this->role_ref . "%';";
 		$unapproved = $wpdb->get_col($query);
 		
 		if (isset($_POST['update_options'])) {
@@ -434,15 +594,8 @@ class absolutePrivacy {
 
 					$user_role->set_role("subscriber");
 					
-					$headers = "MIME-Version: 1.0\n" .
-		    				   "From: ". get_option('admin_email');   
-					$message = "Dear " . $user->user_firstname .",\n";
-					$message .= "Your account with ".get_bloginfo('name')." has been approved. You may login using the following info. \n";
-					$message .= "Username: " . $user->user_login . "\n";
-					$message .= "Password: (not shown)" . "\n";
-					$message .= "URL: " . get_bloginfo('url');
-	
-					@wp_mail($user->user_email, 'Your Account Has Been Approved', $message, $headers);  //email the user telling them they've been approved
+					$this->handleEmail($user->ID, $type= 'account_approved');
+					
 				}
 					// Show a message to say we've done something
 					echo '<div class="updated"><p>' . __('User(s) Approved. Notifications sent via email.') . '</p></div>';
@@ -518,6 +671,27 @@ class absolutePrivacy {
 		echo $output;
 	}
 	
+	function check_is_feed($content){
+		$options = get_option($this->options);
+		if(is_feed()) :
+			switch($options['rss_control']) {
+				case "on":
+					//allow full RSS
+					break;
+				
+				case "headline":
+					$content = '';
+					break;
+			
+				case "excerpt":
+					$content = substr(strip_tags(get_the_content()), 0, $options['rss_characters']) . "...";
+					break;		
+			}
+		endif;
+		
+		return $content;
+	}
+	
 
 	/**
 	 * lockDown function.
@@ -527,29 +701,53 @@ class absolutePrivacy {
 	 * @return void
 	 */
 	function lockDown(){
-		global $userdata, $wp_version;
+		global $wp_version;
 
 		$options = get_option($this->options);
-	
-		if(($options['members_enabled'] == "yes") && (empty($userdata))){
 		
-	 		$requested_url = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] : "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		if(is_feed() && $options['rss_control'] != "off") return; //allow RSS feed to be handled by check_is_feed() function unless the RSS feed is disabled.
+					
+		if(($options['members_enabled'] == "yes") && (!is_user_logged_in()) ){
 			
-			if($wp_version < 2.8){
-				$requested_url = urlencode($requested_url); //WP 2.8+ encodes the URL
+			if( isset($options['allowed_pages']) && $options['allowed_pages'] != '' ){
+				$allowed_pages = explode(',', $options['allowed_pages']);
+				if(is_page($allowed_pages) || is_single($allowed_pages) ) return;  //let them visit the allowed pages
+			
 			}
-
-	 		$url = wp_login_url($requested_url); 
+		
+			if( (isset($options['redirect_page'])) && ($options['redirect_page'] != '') ){
+			
+				if(is_single($options['redirect_page']) || is_page($options['redirect_page'])) return; //end the function is the visitor is already on the redirect_page page
+				
+				$requested_url = get_permalink($options['redirect_page']);
+				
+				if($wp_version < 2.8){
+					$requested_url = urlencode($requested_url); //WP 2.8+ encodes the URL
+				}	
+				
+				$url = $requested_url;
+							
+			}else{
+	 			$requested_url = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] : "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		
+				if($wp_version < 2.8){
+					$requested_url = urlencode($requested_url); //WP 2.8+ encodes the URL
+				}
+		 		
+		 		$url = wp_login_url($requested_url); 
+			}
+			
 				wp_redirect($url, 302);
 				exit();	
 		}
+		
 		return;
 	}
 	
 	function adminLockDown(){
 		global $userdata, $userlevel;
 		
-		if(!is_admin() || empty($userdata)) return; 
+		if(!is_admin() || !(is_user_logged_in()) ) return; 
 		//if it's not an admin page or the user isn't logged in at all, we don't need this
 		
 		$options= get_option($this->options);
@@ -576,7 +774,7 @@ if (isset($absolutePrivacy)) {
 	register_activation_hook(__FILE__, array(&$absolutePrivacy, 'createRole')); //adds role on activation
 	register_deactivation_hook(__FILE__, array(&$absolutePrivacy, 'destroyRole')); //removes role on deactivation
 	
-	if($_GET['action'] == 'register') add_action( 'login_head', array(&$absolutePrivacy, 'regCSS')); //adds registration form CSS
+	if( isset($_GET['action']) && ($_GET['action'] == 'register') ) add_action( 'login_head', array(&$absolutePrivacy, 'regCSS')); //adds registration form CSS
 	add_action( 'register_form', array(&$absolutePrivacy, 'registrationBox'));	//adds password field to registration box
 	add_filter( 'registration_errors', array(&$absolutePrivacy, 'checkRegErrors')); //adds registration form error checks
 	add_action('user_register', array(&$absolutePrivacy, 'addNewUser')); //adds registration info to database
@@ -584,14 +782,12 @@ if (isset($absolutePrivacy)) {
 	add_action('admin_menu', array(&$absolutePrivacy, 'installOptionsMenu')); //install the options menu
 	add_action('admin_menu', array(&$absolutePrivacy, 'moderateMenu')); 
 	add_action('template_redirect', array(&$absolutePrivacy, 'lockDown'));
+	add_filter('the_content', array(&$absolutePrivacy, 'check_is_feed'));
 	add_action('init', array(&$absolutePrivacy, 'adminLockDown'), 0);
 	add_action('login_head', 'rsd_link');
 	
-}
 
 	
-	
-//non class functions (pluggable)
 if(!function_exists('wp_authenticate')) {
 	 function wp_authenticate($username, $password) {
 		global $wpdb, $error, $absolutePrivacy;
@@ -623,8 +819,6 @@ if(!function_exists('wp_authenticate')) {
 		if (array_key_exists($absolutePrivacy->role, $user_role->$capabilities)) {  //if the user's role is listed as "unapproved"
 			return new WP_Error('unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved."));
 		}
-		
-
 
 		$user = apply_filters('wp_authenticate_user', $user, $password);
 		if (is_wp_error($user)) {
@@ -642,118 +836,37 @@ if(!function_exists('wp_authenticate')) {
 	 }
 	 
 	}
-
-/* A lot of below was modified quite heavily from "New User Email Set Up"
-URI: http://www.epicalex.com/new-user-email-set-up/
-By: Alex Cragg
-*/
-
-	if ( !function_exists( 'newuser_mail' ) ) :
-	 function newuser_mail($to, $subject, $message, $headers = '') {
-		global $phpmailer;
-
-		if ( !is_object( $phpmailer ) ) {
-			require_once(ABSPATH . WPINC . '/class-phpmailer.php');
-			require_once(ABSPATH . WPINC . '/class-smtp.php');
-			$phpmailer = new PHPMailer();
-		}
-
-		$mail = compact('to', 'subject', 'message', 'headers');
-		$mail = apply_filters('wp_mail', $mail);
-		extract($mail, EXTR_SKIP);
-
-		if ( $headers == '' ) {
-			$headers = "MIME-Version: 1.0\n" .
-				"From: " . apply_filters('wp_mail_from', "wordpress@" . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME']))) . "\n" . 
-				"Content-Type: text/HTML; charset=\"" . get_option('blog_charset') . "\"\n";
-		}
-
-		$phpmailer->ClearAddresses();
-		$phpmailer->ClearCCs();
-		$phpmailer->ClearBCCs();
-		$phpmailer->ClearReplyTos();
-		$phpmailer->ClearAllRecipients();
-		$phpmailer->ClearCustomHeaders();
-
-		$phpmailer->FromName = "WordPress";
-		$phpmailer->AddAddress("$to", "");
-		$phpmailer->Subject = $subject;
-		$phpmailer->Body    = $message;
-    	    if (get_option("newuseremailhtml") == 'text/HTML' ) {
-		$phpmailer->IsHTML( true );
-		    } else {
-		$phpmailer->IsHTML( false );
-		    }
-		$phpmailer->IsMail(); // set mailer to use php mail()
-
-		do_action_ref_array('phpmailer_init', array(&$phpmailer));
-
-		$mailheaders = (array) explode( "\n", $headers );
-		foreach ( $mailheaders as $line ) {
-			$header = explode( ":", $line );
-			switch ( trim( $header[0] ) ) {
-				case "From":
-					$from = trim( str_replace( '"', '', $header[1] ) );
-					if ( strpos( $from, '<' ) ) {
-						$phpmailer->FromName = str_replace( '"', '', substr( $header[1], 0, strpos( $header[1], '<' ) - 1 ) );
-						$from = trim( substr( $from, strpos( $from, '<' ) + 1 ) );
-						$from = str_replace( '>', '', $from );
-					} else {
-						$phpmailer->FromName = $from;
-					}
-					$phpmailer->From = trim( $from );
-					break;
-				default:
-					if ( $line != '' && $header[0] != 'MIME-Version' && $header[0] != 'Content-Type' )
-						$phpmailer->AddCustomHeader( $line );
-					break;
-			}
-		}	
-
-		$result = @$phpmailer->Send();
-
-		return $result;
-	 }
-	endif;
-
+	
 	if ( !function_exists('wp_new_user_notification') ) {
 	 function wp_new_user_notification($user_id, $plaintext_pass = '') {
-		$user = new WP_User($user_id);
-
-		$user_login = stripslashes($user->user_login);
-		$user_email = stripslashes($user->user_email);
+		global $absolutePrivacy;
+		$user = get_userdata($user_id); //object with user info
+			
+   		$absolutePrivacy->handleEmail($user_id, $type='admin_notification');  //send admin email
     
-    
-    		$headers .= "MIME-Version: 1.0\n" .
-	    				"From: ". $user_email;         
-	    	$subject = "New User Registration on " . get_bloginfo('name');
-
-    	
-    		$message = "A user has registered on " . get_bloginfo('name') . "\n";
-    		$message .= "Username: " . $user_login . "\n";
-	    	$message .= "Email: " . $user_email;
-				$message .= "\n" . "This user cannot login until you approve their account." . "\n \n" .
-							"Click the following link to approve this user: " .  get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=' . dirname(plugin_basename(__FILE__)) . '/absolute_privacy.php&mode=moderate&id='.$user_id;
-
-		@newuser_mail(get_option('admin_email'), $subject, $message, $headers);
-
 		if ( empty($plaintext_pass) )
 			return;
-
-    		$headers .= "MIME-Version: 1.0\n" .
-		    "From: ". get_option('admin_email');
-        
-    		$subject = "Registration info for " . get_bloginfo('name');
-
-    		$message = "Thanks for registering for " . get_bloginfo('name') . "\n";
-	    	$message .= "Your username is " . $user_login . "\n \n";
-   			$message .= "You will not be able to login until you have been approved by an administrator. You will be emailed once your account has been approved.";
-    	
 		
-		newuser_mail($user_email, $subject, $message, $headers);
+		$absolutePrivacy->handleEmail($user_id, $type='pending_welcome'); //send new user pending message email
+
 	 }
+	}
+
+} //end class_exists check
+
+//quick script to get users IP address. Taken from http://www.phpbuilder.com/board/showpost.php?s=54f0e5d7127dac39a80f088ba1c4def1&p=10748983&postcount=8
+/*
+function ap_getUserIP(){ 
+	if ( isset($_SERVER["REMOTE_ADDR"]) )    { 
+    	$ip = $_SERVER["REMOTE_ADDR"] . ' '; 
+	}elseif ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) )    { 
+    	$ip = $_SERVER["HTTP_X_FORWARDED_FOR"] . ' '; 
+	} elseif ( isset($_SERVER["HTTP_CLIENT_IP"]) )    { 
+	    $ip =  $_SERVER["HTTP_CLIENT_IP"] . ' '; 
+	}
 	
-
+	return $ip;
 }
-
+// Working on this for a future version
+*/
 ?>
