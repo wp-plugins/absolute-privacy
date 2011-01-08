@@ -46,7 +46,7 @@ define( 'ABSPRIVACY_ROLENAME', 'Unapproved User' );
 
 	
 	
-require_once( ABSPRIVACY_PATH . '/general-functions.php' );				// holds all the functions for the plugin
+require_once( ABSPRIVACY_PATH . '/functions.php' );				// holds all the functions for the plugin
 
 register_activation_hook( __FILE__, 'abpr_activationFunction' ); 		//adds role and options on activation
 
