@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: privacy, registration, moderation
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.0.2
+Stable tag: 2.0.1
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
