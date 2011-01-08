@@ -27,7 +27,23 @@ function abpr_activationFunction(){
 		
 	/* Let's set the default options if they don't exist */
 	$options = get_option( ABSPRIVACY_OPTIONS );
-	if ( !$options ) {
+	$old_options = get_option( 'absolute_privacy' );
+	
+	if ( isset ( $old_options ) && !isset( $options ) ) {
+		$options[ 'member_lockdown' ] = ( $old_options[ 'members_enabled' ] == 'yes' ) ? 'lockdown' : 'off';
+		$options[ 'allowed_pages' ] = $old_options[ 'allowed_pages' ];
+		$options[ 'pending_welcome_email_subject' ] = $old_options[ 'pending_welcome_email_subject' ];
+		$options[ 'pending_welcome_message' ] = $old_options[ 'pending_welcome_message' ];
+		$options[ 'account_approval_email_subject' ] = $old_options[ 'account_approval_email_subject' ];
+		$options[ 'account_approval_message' ] = $old_options[ 'account_approval_message' ];
+		$options[ 'admin_approval_email_subject' ] = $old_options[ 'admin_approval_email_subject'];
+		$options[ 'admin_approval_message' ] = $old_options[ 'admin_approval_message' ];
+		$options[ 'redirect_page' ] = $old_options[ 'redirect_page' ];
+		$options[ 'admin_block' ] = $old_options[ 'admin_block' ];
+
+		delete_option( $old_options );
+		update_option( ABSPRIVACY_OPTIONS, $options );
+	} elseif ( !$options ) {
 
 		$options[ 'member_lockdown' ] = 'off';
 		$options[ 'rss_control' ] = 'off';

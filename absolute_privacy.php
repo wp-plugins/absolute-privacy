@@ -6,7 +6,7 @@ Plugin Name: Absolute Privacy
 Plugin URI: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
 Description: Give your blog absolute privacy. Forces users to register with their name and to choose a password (do not forget to enable registrations). Users cannot login until approved by an administrator. Also, gives the option to lock down your site from non-logged in viewers. 
 Author: John Kolbert
-Version: 2.0
+Version: 2.0.2
 Author URI: http://www.johnkolbert.com/
 
 Copyright Notice
