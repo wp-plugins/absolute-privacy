@@ -1,27 +1,20 @@
 === Plugin Name ===
 Contributors: johnkolbert
-Donate link: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TK5KDJP9N4F28
 Tags: privacy, registration, moderation
-Requires at least: 2.7
-Tested up to: 2.9.2
-Stable tag: 1.3
+Requires at least: 3.0
+Tested up to: 3.1
+Stable tag: 2.0.1
 
-New user moderation, blog lock-down, users can chose their own password and must enter their name when registering.
+New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
 == Description ==
 
-Absolute Privacy turns your WordPress blog into a fully private site where you control who has access. It's perfect for family blogs, private communities, and personal websites.
+After having a few odd registrations and comments on our family blog, my wife asked me to create a plugin that would give the blog security from strangers but still be easily accessible to family and friends. Absolute Privacy does just that! 
 
-After activating the plugin your registrations are automatically protected. First, the plugin adds new fields to the registration menu which require the registrant to enter their first and last name, and to choose a password. Newly registered members are given a WordPress role created by the plugin called "Unapproved User", and although they are registered and have a password, they are unable to login until approved.
+Absolute Privacy turns your WordPress blog into a fully private site where you control who has access. It's perfect for family blogs, private communities, and personal websites. You can lockdown the entire site or create a members only area, moderate new registrations, force users to enter first/last name and choose their password during sign up, and more!
 
-After registering, the new user is sent an email reminding him/her that they will be unable to login until their account has been approved. The site administrator is sent an email with a link to quickly approve or delete the new user. Once the administrator approves the account the user is sent an email notification. All notification emails are fully customizable. To unapprove a user, simply edit their profile and change their "Role" to "Unapproved User".
-
-A new tab called "Moderate Users" is created in the "Users" area which allows you to quickly view and either approve or delete all unapproved users.
-
-By default, non-logged in visitors are redirected to the WordPress login page. You can, however, define an alternate page for them to be redirected to. You can also allow access to specific posts or pages. Also, you can prevent access to administrative pages (profile, dashboard, etc) for registered members. You also have complete control over your RSS feed (disabled, enabled, headlines only, or limited to X number of characters. 
-
-Your blog now is absolutely private!
-
+Your site is now absolutely private!
 
 == Installation ==
 
@@ -31,6 +24,12 @@ Simply upload to your wp-content/plugins folder and activate from the plugins me
 
 Why can't users register?
 Don't forget to enable user registration in the WordPress general options menu.
+
+How do I use the shortcakes?
+Simply enter the shortcode into the visual editor, brackets and all. Eg: [profilepage]
+
+Where can I find more documentation?
+Visit the plugins homepage
 
 == Screenshots ==
 1. A view of the added registration form fields
