@@ -100,7 +100,37 @@ function abpr_installOptionsMenu() {  // install the options menu
 function abpr_optionsPage(){
     
     global $wpdb;
+    $old_options = get_option( 'absolute_privacy' ); 
+    $current_options = get_option( ABSPRIVACY_OPTIONS );
     
+    if( isset( $_GET[ 'update_options' ] ) && $old_options ){
+		$options[ 'member_lockdown' ] = ( $old_options[ 'members_enabled' ] == 'yes' ) ? 'lockdown' : 'off';
+		$options[ 'allowed_pages' ] = $old_options[ 'allowed_pages' ];
+		$options[ 'pending_welcome_email_subject' ] = $old_options[ 'pending_welcome_email_subject' ];
+		$options[ 'pending_welcome_message' ] = $old_options[ 'pending_welcome_message' ];
+		$options[ 'account_approval_email_subject' ] = $old_options[ 'account_approval_email_subject' ];
+		$options[ 'account_approval_message' ] = $old_options[ 'account_approval_message' ];
+		$options[ 'admin_approval_email_subject' ] = $old_options[ 'admin_approval_email_subject'];
+		$options[ 'admin_approval_message' ] = $old_options[ 'admin_approval_message' ];
+		$options[ 'redirect_page' ] = $old_options[ 'redirect_page' ];
+		$options[ 'admin_block' ] = $old_options[ 'admin_block' ];
+
+		delete_option( 'absolute_privacy' );
+		update_option( ABSPRIVACY_OPTIONS, $options );
+	}elseif ( isset( $_GET[ 'default_options' ] ) && !$current_options ){
+		$options[ 'member_lockdown' ] = 'off';
+		$options[ 'rss_control' ] = 'off';
+		$options[ 'pending_welcome_email_subject' ] = 'Your account with ' . stripslashes( get_option( 'blogname' ) ) . ' is under review';
+		$options[ 'pending_welcome_message' ] = "Hi %name%, \n \n Thanks for registering for %blogname%! Your registration is currently being reviewed. You will not be able to login until it has been approved. You will receive an email at that time. Thanks for your patience. \n \n Sincerely, \n \n %blogname%";
+		$options[ 'account_approval_email_subject' ] = "Your account has been approved!";
+		$options[ 'account_approval_message' ] = "Your registration with %blogname% has been approved! \n \n You may login using the following information: \n Username: %username% \n Password: (hidden) \n URL: %login_url%";
+		$options[ 'admin_approval_email_subject' ] = "A new user is waiting approval";
+		$options[ 'admin_approval_message' ] = "A new user has registered for %blogname% and is waiting your approval. You may approve or delete them here: %approval_url% \n \n This user cannot log in until you approve them.";
+		
+		update_option( ABSPRIVACY_OPTIONS, $options );
+	
+	}
+	
     if ( isset( $_POST[ 'update_options' ] ) ) {	//we're updating
    		$options[ 'member_lockdown' ] = trim( $_POST[ 'member_lockdown' ],'{}' );
    		$options[ 'redirect_page' ] = trim( $_POST[ 'redirect_page' ],'{}' );
@@ -143,7 +173,12 @@ function abpr_optionsPage(){
 			<p>Sorry, Absolute Privacy does not currently support multi-site enabled installations. This is planned for a future release, but a timeline is not available.</p>
 
 <?php else : ?>
-
+		<?php if ( $old_options && !$options ) : ?>
+		
+			<p>I've detected you used an old version of Absolute Privacy. Would you like to:</p>
+				<a class="submit"href="<?php echo home_url('wp-admin/options-general.php?page=absolute-privacy/functions.php&update_options'); ?>">Import Old Options</a>
+				<a class="submit"href="<?php echo home_url('wp-admin/options-general.php?page=absolute-privacy/functions.php&default_options'); ?>">Continue with default options</a>
+		<?php return; endif; ?>
 				<form method="post" action="">
 					<div class="submit" style="display: block; margin-bottom: -30px;" ><input type="submit" name="update_options" value="Update Settings"  style="font-weight:bold;" /> </div>				
 					<br clear="all" />

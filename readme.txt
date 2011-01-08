@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: privacy, registration, moderation
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
@@ -38,6 +38,17 @@ Visit the plugins homepage
 4. Approval is easy: click the link in the approval pending email and press approve
 
 == Changelog ==
+
+= 2.0.3 =
+*fixed inability to transfer old plugin settings from v1.3
+
+= 2.0.1 =
+*fixed fatal error due to bad file reference
+
+= 2.0 =
+*3.0.x+ required
+*Complete code rewrite. I rewrote the entire plugin from object oriented to procedural as this made more sense to me for this plugin. It should be much easier for others to modify and read through the code. No need for overkill here.
+*Two different privacy methods: complete lockdown and members area. Complete lockdown functions like the plugin did previously, the entire site will be password protected. Members area allows you protect a specific page (and all subpages).
 
 = 1.3 = 
 * added ability to control RSS feeds. Feeds can be disabled, enabled, limited to headlines, or limited to a predefined number of characters
