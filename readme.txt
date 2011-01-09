@@ -3,8 +3,8 @@ Contributors: johnkolbert
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TK5KDJP9N4F28
 Tags: privacy, registration, moderation
 Requires at least: 3.0
-Tested up to: 3.0
-Stable tag: 1.3
+Tested up to: 3.1
+Stable tag: 2.0.4
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
@@ -42,7 +42,7 @@ Visit the plugins homepage
 = 2.0.4 =
 * fixed bug where upgrading from v1.3 to 2.0.x would lose some settings
 * fixed bug where members only lockdown method would lockdown the entire site
-* fixed bug where those upgradeing from v1.3 were unable to approve users in the moderate menu
+* fixed bug where those upgrading from v1.3 were unable to approve users in the moderate menu
 
 = 2.0.3 =
 * fixed inability to transfer old plugin settings from v1.3
