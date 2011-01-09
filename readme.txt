@@ -39,16 +39,21 @@ Visit the plugins homepage
 
 == Changelog ==
 
+= 2.0.4 =
+* fixed bug where upgrading from v1.3 to 2.0.x would lose some settings
+* fixed bug where members only lockdown method would lockdown the entire site
+* fixed bug where those upgradeing from v1.3 were unable to approve users in the moderate menu
+
 = 2.0.3 =
-*fixed inability to transfer old plugin settings from v1.3
+* fixed inability to transfer old plugin settings from v1.3
 
 = 2.0.1 =
-*fixed fatal error due to bad file reference
+* fixed fatal error due to bad file reference
 
 = 2.0 =
-*3.0.x+ required
-*Complete code rewrite. I rewrote the entire plugin from object oriented to procedural as this made more sense to me for this plugin. It should be much easier for others to modify and read through the code. No need for overkill here.
-*Two different privacy methods: complete lockdown and members area. Complete lockdown functions like the plugin did previously, the entire site will be password protected. Members area allows you protect a specific page (and all subpages).
+* 3.0.x+ required
+* Complete code rewrite. I rewrote the entire plugin from object oriented to procedural as this made more sense to me for this plugin. It should be much easier for others to modify and read through the code. No need for overkill here.
+* Two different privacy methods: complete lockdown and members area. Complete lockdown functions like the plugin did previously, the entire site will be password protected. Members area allows you protect a specific page (and all subpages).
 
 = 1.3 = 
 * added ability to control RSS feeds. Feeds can be disabled, enabled, limited to headlines, or limited to a predefined number of characters

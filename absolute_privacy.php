@@ -6,7 +6,7 @@ Plugin Name: Absolute Privacy
 Plugin URI: http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy
 Description: Give your blog absolute privacy. Forces users to register with their name and to choose a password (do not forget to enable registrations). Users cannot login until approved by an administrator. Also, gives the option to lock down your site from non-logged in viewers. 
 Author: John Kolbert
-Version: 2.0.3
+Version: 2.0.4
 Author URI: http://www.johnkolbert.com/
 
 Copyright Notice
@@ -38,17 +38,17 @@ DEALINGS IN THE SOFTWARE.
 
 
 
-define( 'ABSPRIVACY_OPTIONS', 'absolute-privacy-options' );
+define( 'ABSPRIVACY_OPTIONS', 'absolute-privacy-options' );			// options name
+define( 'ABSPRIVACY_DBOPTION', 'absolute-privacy-dbversion' );		// database version options name
+define( 'ABSPRIVACY_DBVERSION', 1 );								// database version
 define( 'ABSPRIVACY_PATH', WP_PLUGIN_DIR . '/' . basename(dirname(__FILE__)) );
 define( 'ABSPRIVACY_URL', WP_PLUGIN_URL . '/' . basename(dirname(__FILE__)) );
 define( 'ABSPRIVACY_ROLEREF', 'unapproved' );
 define( 'ABSPRIVACY_ROLENAME', 'Unapproved User' );
-
-	
 	
 require_once( ABSPRIVACY_PATH . '/functions.php' );				// holds all the functions for the plugin
 
-register_activation_hook( __FILE__, 'abpr_activationFunction' ); 		//adds role and options on activation
+register_activation_hook( __FILE__, 'abpr_doUpgrade' ); 		//adds role and options on activation
 
 
 /* Install the menus */	
@@ -75,12 +75,6 @@ if ( !is_multisite() ) {	// No multisite support yet
 	add_shortcode( 'loginform', 'abpr_loginShortcode' );
 	add_shortcode( 'profilepage', 'abpr_profileShortcode' );
 	
-	$old_options = get_option( 'absolute_privacy' ); 
-	if ( $old_options ) {
+	if ( abpr_needsUpgrade() )
 		add_action( 'admin_notices', 'abpr_adminnotice' );
-	}
-	
-	function abpr_adminnotice(){
-		echo '<div class="updated"><p>Please check your <a href="'.home_url('wp-admin/options-general.php?page=absolute-privacy/functions.php').'">Absolute Privacy settings</a></p></div>';
-	}
 }
