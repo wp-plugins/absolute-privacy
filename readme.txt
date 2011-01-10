@@ -10,6 +10,8 @@ New user moderation, site lock-down or members area, users can chose their own p
 
 == Description ==
 
+IMPORTANT: v2.0+ does NOT have multisite support. The plugin will NOT protect any of your sites. I hope to include official multisite support in a future release.
+
 After having a few odd registrations and comments on our family blog, my wife asked me to create a plugin that would give the blog security from strangers but still be easily accessible to family and friends. Absolute Privacy does just that! 
 
 Absolute Privacy turns your WordPress blog into a fully private site where you control who has access. It's perfect for family blogs, private communities, and personal websites. You can lockdown the entire site or create a members only area, moderate new registrations, force users to enter first/last name and choose their password during sign up, and more!
