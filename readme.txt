@@ -41,6 +41,9 @@ Visit the plugins homepage
 
 == Changelog ==
 
+= 2.0.5-dev =
+* fixed styling issue with admin notices
+
 = 2.0.4 =
 * fixed bug where upgrading from v1.3 to 2.0.x would lose some settings
 * fixed bug where members only lockdown method would lockdown the entire site

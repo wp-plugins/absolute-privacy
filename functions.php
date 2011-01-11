@@ -78,7 +78,7 @@ function abpr_optionsPage(){
     }
     
     if ( get_option( 'users_can_register' ) != 1 ) {	//notify user that registrations are not enabled. Hopefully this will save me some support emails.
-    	echo '<div class="updated" style="width: 80%;"> <p><strong>Notice:</strong> Your settings do not currently allow users to register themselves. If you want to allow the Absolute Privacy plugin to handle user moderation, please check <em>anyone can register</em> on the <a href="' . home_url('wp-admin/options-general.php') . '">general settings page</a>.</p></div>';
+    	echo '<div class="updated"> <p><strong>Notice:</strong> Your settings do not currently allow users to register themselves. If you want to allow the Absolute Privacy plugin to handle user moderation, please check <em>anyone can register</em> on the <a href="' . home_url('wp-admin/options-general.php') . '">general settings page</a>.</p></div>';
     }
     
 ?>    
