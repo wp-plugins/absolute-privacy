@@ -373,17 +373,8 @@ function abpr_optionsPage(){
  * @return void
  */
 function abpr_moderateMenu() { 
-    	if ( function_exists( 'current_user_can' ) ) {
-    		if ( !current_user_can( 'manage_options' ) ) 
-    			return;
-    	} else {
-    		global $user_level;
-    		get_currentuserinfo();
-    		if ( $user_level < 10 ) 
-    			return;
-    	}
-
-    	add_submenu_page( 'users.php', 'Moderate Users', 'Moderate Users', 'edit_themes', basename(__FILE__), 'abpr_moderateUsers' );
+	if ( current_user_can( 'manage_options' ) ) 
+		add_submenu_page( 'users.php', 'Moderate Users', 'Moderate Users', 'edit_themes', basename(__FILE__), 'abpr_moderateUsers' );
 }
 
 /**
