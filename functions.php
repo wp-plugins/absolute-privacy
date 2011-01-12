@@ -1,7 +1,6 @@
 <?php
 
 /* This file holds the functions for the Absolute Privacy plugin.
-   v2.0
    
    By John Kolbert
    http://www.johnkolbert.com/
@@ -19,19 +18,8 @@
  *	@return void
 */
 function abpr_installOptionsMenu() {  // install the options menu
-	if ( function_exists ( 'current_user_can ' ) ) {
-		if ( !current_user_can( 'manage_options' ) ) return;
-	} else {
-
-		global $user_level;
-		get_currentuserinfo();
-	
-		if ( $user_level < 10 ) return;
-	}
-	
-	if ( function_exists( 'add_options_page' ) ) {
-			add_options_page( 'Absolute Privacy', 'Absolute Privacy', 1, __FILE__, 'abpr_optionsPage' );
-	}
+	if ( current_user_can( 'manage_options' ) ) 
+		add_options_page( 'Absolute Privacy', 'Absolute Privacy', 1, __FILE__, 'abpr_optionsPage' );
 } 
 
 

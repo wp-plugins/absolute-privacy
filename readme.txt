@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: privacy, registration, moderation
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.0.4
+Stable tag: 2.0.5
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
@@ -41,8 +41,9 @@ Visit the plugins homepage
 
 == Changelog ==
 
-= 2.0.5-dev =
+= 2.0.5 =
 * fixed styling issue with admin notices
+* fixed bug where some users could not access admin page
 
 = 2.0.4 =
 * fixed bug where upgrading from v1.3 to 2.0.x would lose some settings
