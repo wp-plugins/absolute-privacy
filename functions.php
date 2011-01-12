@@ -1,7 +1,6 @@
 <?php
 
 /* This file holds the functions for the Absolute Privacy plugin.
-   v2.0
    
    By John Kolbert
    http://www.johnkolbert.com/
@@ -19,19 +18,8 @@
  *	@return void
 */
 function abpr_installOptionsMenu() {  // install the options menu
-	if ( function_exists ( 'current_user_can ' ) ) {
-		if ( !current_user_can( 'manage_options' ) ) return;
-	} else {
-
-		global $user_level;
-		get_currentuserinfo();
-	
-		if ( $user_level < 10 ) return;
-	}
-	
-	if ( function_exists( 'add_options_page' ) ) {
-			add_options_page( 'Absolute Privacy', 'Absolute Privacy', 1, __FILE__, 'abpr_optionsPage' );
-	}
+	if ( current_user_can( 'manage_options' ) ) 
+		add_options_page( 'Absolute Privacy', 'Absolute Privacy', 1, __FILE__, 'abpr_optionsPage' );
 } 
 
 
@@ -78,7 +66,7 @@ function abpr_optionsPage(){
     }
     
     if ( get_option( 'users_can_register' ) != 1 ) {	//notify user that registrations are not enabled. Hopefully this will save me some support emails.
-    	echo '<div class="updated" style="width: 80%;"> <p><strong>Notice:</strong> Your settings do not currently allow users to register themselves. If you want to allow the Absolute Privacy plugin to handle user moderation, please check <em>anyone can register</em> on the <a href="' . home_url('wp-admin/options-general.php') . '">general settings page</a>.</p></div>';
+    	echo '<div class="updated"> <p><strong>Notice:</strong> Your settings do not currently allow users to register themselves. If you want to allow the Absolute Privacy plugin to handle user moderation, please check <em>anyone can register</em> on the <a href="' . home_url('wp-admin/options-general.php') . '">general settings page</a>.</p></div>';
     }
     
 ?>    
