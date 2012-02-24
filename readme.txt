@@ -1,10 +1,10 @@
 === Plugin Name ===
-Contributors: johnkolbert
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TK5KDJP9N4F28
+Contributors: johnkolbert, ericmann
 Tags: privacy, registration, moderation
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 2.0.5
+Tested up to: 3.3.1
+Stable tag: 2.0.6
+License: GPLv2
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
 
@@ -41,6 +41,11 @@ Visit the plugins homepage
 
 == Changelog ==
 
+= 2.0.6 =
+* fixed immediate security issue.
+* fixed several PHP array index notices.
+* fixed several deprecated function warnings.
+
 = 2.0.5 =
 * fixed styling issue with admin notices
 * fixed bug where some users could not access admin page
@@ -72,7 +77,7 @@ Visit the plugins homepage
 * added ability to prevent subscribers from accessing any admin pages (such as their profile or the dashboard)
 
 = 1.1 = 
-* Fixed bug where some users in Internet Explorer couldnÕt login
+* Fixed bug where some users in Internet Explorer couldnï¿½t login
 * Added WordPress v2.8 compatibility
 
 = 1.0 =

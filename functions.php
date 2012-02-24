@@ -140,7 +140,7 @@ function abpr_optionsPage(){
 							
 							<tr>
 								<th style="width: 120px;">Allowed Pages:</th>
-								<td><input type="text" name="allowed_pages" id="allowed_pages" style="width: 58px;" value="<?php echo $options['allowed_pages']; ?>" /></td>
+								<td><input type="text" name="allowed_pages" id="allowed_pages" style="width: 58px;" value="<?php echo isset($options['allowed_pages']) ? $options['allowed_pages'] : ''; ?>" /></td>
 								<td>These pages will be accessible to non-logged in users. List page IDs separated by a comma (eg: <code>0,19,12</code>). <em>Tip:</em> Enter <code>0</code> to allow access to the home page. </td>
 							</tr>
 							<tr>
@@ -149,7 +149,7 @@ function abpr_optionsPage(){
 									<input type="radio" name="rss_control" value="off" <?php if ($options['rss_control'] == "off") echo 'checked'; ?> /> RSS Disabled &nbsp; &nbsp;
 									<input type="radio" name="rss_control" value="on" <?php if ($options['rss_control'] == "on") echo 'checked'; ?> /> RSS On &nbsp; &nbsp;<br />
 									<input type="radio" name="rss_control" value="headline" <?php if ($options['rss_control'] == "headline") echo 'checked'; ?> /> Limited to headlines &nbsp; &nbsp;
-									<input type="radio" name="rss_control" value="excerpt" <?php if ($options['rss_control'] == "excerpt") echo 'checked'; ?> /> Limited to <input type="text" name="rss_characters" id="rss_characters" value="<?php echo $options['rss_characters']; ?>" style="width: 32px;" />&nbsp;Characters
+									<input type="radio" name="rss_control" value="excerpt" <?php if ($options['rss_control'] == "excerpt") echo 'checked'; ?> /> Limited to <input type="text" name="rss_characters" id="rss_characters" value="<?php echo isset($options['rss_characters']) ? $options['rss_characters'] : ''; ?>" style="width: 32px;" />&nbsp;Characters
 									<br />Viewing your website's RSS feed does not require the user to login. Thus your RSS feed is publicly accessible if it is enabled. You may disable or limit the RSS feed above.
 								</td>
 			
@@ -177,7 +177,7 @@ function abpr_optionsPage(){
 		
 							<tr>
 								<th style="width: 150px;">Members Only Page:</th>
-								<td><input type="text" name="members_only_page" id="members_only_page" style="width: 58px;" value="<?php echo $options['members_only_page']; ?>" /></td>
+								<td><input type="text" name="members_only_page" id="members_only_page" style="width: 58px;" value="<?php echo isset($options['members_only_page']) ? $options['members_only_page'] : ''; ?>" /></td>
 								<td>Enter the ID of your main members only page <code>Eg: 42</code> This page and all child pages will be accessible only to logged in members.</td>
 							</tr>
 							
@@ -220,13 +220,13 @@ function abpr_optionsPage(){
 						<tbody id="users" class="list:user user-list">
 							<tr>
 								<th>Redirect Non-logged in Users To:</th>
-								<td style="padding-top: 2.5%;"><input type="text" name="redirect_page" id="redirect_page" style="width: 28px;" value="<?php echo $options['redirect_page']; ?>" /></td>
+								<td style="padding-top: 2.5%;"><input type="text" name="redirect_page" id="redirect_page" style="width: 28px;" value="<?php echo isset($options['redirect_page']) ? $options['redirect_page'] : ''; ?>" /></td>
 								<td>By default, non-logged in users will be redirected to the login form. Alternatively, you can enter a page ID here that you want non-logged in users to be redirected to instead.</td>
 							</tr>
 
 							<tr>
 								<th style="padding-top: 1%;">Block Admin Access:</th>
-								<td style="padding-top: 3%;"><input type="checkbox" name="admin_block" value="yes" <?php if ($options['admin_block'] == "yes") echo " checked "; ?> /> Yes</td>
+								<td style="padding-top: 3%;"><input type="checkbox" name="admin_block" value="yes" <?php if (isset($options['admin_block']) && $options['admin_block'] == "yes") echo " checked "; ?> /> Yes</td>
 								<td>This blocks subscribers from viewing any administrative pages, such as their wp-admin profile page or the dashboard. If they try to access an administrative page they will be redirected to the homepage.</td>
 							</tr>
 							
@@ -252,7 +252,7 @@ function abpr_optionsPage(){
 							</tr>
 							<tr>
 								<th>Profile Edit Page</th>
-								<td style="padding-top: 2%;"> <input type="text" size="10" name="profile_page" id="profile_page" value="<?php echo $options['profile_page']; ?>" />
+								<td style="padding-top: 2%;"> <input type="text" size="10" name="profile_page" id="profile_page" value="<?php echo isset($options['profile_page']) ? $options['profile_page'] : ''; ?>" />
 								<td> If you've created a page for the user to edit their profile, enter its ID here <code>(eg: 42)</code>. If a user uses the password recovery tool, they will be given a temporary password with a link to this page to change it. <em>Tip:</em> Use the <code>[profilepage]</code> shortcode to create a profile page.</td>
 							</tr>
 							
@@ -308,7 +308,6 @@ function abpr_optionsPage(){
 						<tr>
 							<td>
 								<ul style="font-size: 1.0em;">
-									<li><a  style="font-weight: bold;" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TK5KDJP9N4F28" title="Donate" target="_blank">Donate to support development</a></li>
 									<li><a href="http://www.wordpress.org/extend/plugins/absolute-privacy/" title="Rate">Rate this plugin on WP.org</a></li>					
 								</ul>
 							</td>
@@ -329,7 +328,6 @@ function abpr_optionsPage(){
 							<td>
 								<ul style="font-size: 1.0em;">
 									<li><a href="http://www.johnkolbert.com/portfolio/wp-plugins/absolute-privacy/" title="Go to Plugin Homepage">Plugin Homepage</a></li>
-									<li><a href="http://www.mammothapps.com/contact/" title="Hire Me!">Hire me to customize this plugin</a></li>	
 								</ul>
 							</td>
 						</tr>
@@ -351,6 +349,9 @@ function abpr_optionsPage(){
 								<p style="text-align: center; font-size: 1.2em;">Plugin created by <a href="http://www.johnkolbert.com/" title="John Kolbert">John Kolbert</a><br />
 									<span style="font-size: 0.8em;">Need Help? <a href="http://www.mammothapps.com/contact/" title="Hire Me">Hire me.</a><br />
 									<a href="http://www.twitter.com/johnkolbert" title="Follow Me!">Follow me on Twitter!</a><br /></span>
+								</p>
+								<p style="text-align: center; font-size: 1.2em;">Plugin maintained by <a href="http://www.eamann.com/" title="Eric Mann">Eric Mann</a><br />
+									<span style="font-size: 0.8em;"><a href="http://www.twitter.com/ericmann" title="Follow Me!">Follow me on Twitter!</a><br /></span>
 								</p>
 							</td>
 						</tr>
@@ -690,13 +691,13 @@ function abpr_adminLockDown(){
     
     $options= get_option( ABSPRIVACY_OPTIONS );
 
-    if ( !is_admin() || !( is_user_logged_in() ) || $option[ 'member_lockdown' ] == 'off' ) return; 
+    if ( !is_admin() || !( is_user_logged_in() ) || ( isset( $options[ 'member_lockdown' ] ) && $options[ 'member_lockdown' ] == 'off' ) ) return;
     	//if it's not an admin page or the user isn't logged in at all, we don't need this
     
     $user_role = new WP_User( $userdata->ID );
     $capabilities = $wpdb->prefix . 'capabilities';
      
-    if ( $options[ 'admin_block' ] == "yes" && array_key_exists( 'subscriber', $user_role->$capabilities ) ) {
+    if ( isset( $options[ 'admin_block'] ) && $options[ 'admin_block' ] == "yes" && array_key_exists( 'subscriber', $user_role->$capabilities ) ) {
  		$url = get_bloginfo( 'url' ); 
     	wp_redirect( $url, 302 );
     	exit();	
@@ -741,9 +742,9 @@ function abpr_regCSS(){
 function abpr_registrationBox(){ 
 
     $output = '<p><label>First Name:<br />
-    			<input type="text" name="first_name" id="first_name" class="input" value="' . ( isset( $_POST[ 'first_name' ] ) ? attribute_escape( stripslashes( $_POST[ 'first_name' ] ) ) : '' ) . '" size="25" tabindex="70" /></label></p>
+    			<input type="text" name="first_name" id="first_name" class="input" value="' . ( isset( $_POST[ 'first_name' ] ) ? esc_attr( stripslashes( $_POST[ 'first_name' ] ) ) : '' ) . '" size="25" tabindex="70" /></label></p>
     			<p><label>Last Name:<br />
-    			<input type="text" name="last_name" id="last_name" class="input" value="' . ( isset( $_POST[ 'last_name' ] ) ? attribute_escape( stripslashes( $_POST[ 'last_name' ] ) ) : '' ) . '" size="25" tabindex="80" /></label></p>
+    			<input type="text" name="last_name" id="last_name" class="input" value="' . ( isset( $_POST[ 'last_name' ] ) ? esc_attr( stripslashes( $_POST[ 'last_name' ] ) ) : '' ) . '" size="25" tabindex="80" /></label></p>
     		
     			<p><label>Password:<br />
     			<input type="password" name="pswd1" id="pswd1" class="input" size="25" tabindex="91"/></label></p>
@@ -791,14 +792,14 @@ function abpr_checkRegErrors( $errors ){
  */
 function abpr_addNewUser( $user_id ){
 
-    update_usermeta( $user_id, 'first_name', attribute_escape( stripslashes( $_POST[ 'first_name' ] ) ) );
-    update_usermeta( $user_id, 'last_name', attribute_escape( stripslashes( $_POST[ 'last_name' ] ) ) );
+    update_user_meta( $user_id, 'first_name', esc_attr( stripslashes( $_POST[ 'first_name' ] ) ) );
+    update_user_meta( $user_id, 'last_name', esc_attr( stripslashes( $_POST[ 'last_name' ] ) ) );
 
     $user_role = new WP_User( $user_id );
     $user_role->set_role( ABSPRIVACY_ROLEREF );  //for some reason this role isn't being set. Need to look into it
     	
     if ( !empty( $_POST[ 'pswd1' ] ) ) {
-    	$_POST[ 'pswd1' ] = wp_set_password( attribute_escape( stripslashes( $_POST[ 'pswd1' ] ) ), $user_id );
+    	$_POST[ 'pswd1' ] = wp_set_password( esc_attr( stripslashes( $_POST[ 'pswd1' ] ) ), $user_id );
     }
     
     unset( $_POST[ 'pswd1' ] );
@@ -833,15 +834,15 @@ function abpr_add_error_code( $shake_codes ){
  */
 function abpr_authenticateUser( $user, $username, $password ){
 	global $wpdb;
-	
-		$user = get_userdatabylogin( $username ); 
 
-		$cap = $wpdb->prefix . "capabilities";
-		if ( $user && array_key_exists( ABSPRIVACY_ROLEREF, $user->$cap ) ) {  //if the user's role is listed as "unapproved"
-			$user = new WP_Error( 'unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved.") );
-			add_filter( 'shake_error_codes', 'abpr_add_error_code' );	//make the login box shake
-			remove_action( 'authenticate', 'wp_authenticate_username_password', 20 );	//prevent authentication of user
-		}
+	$tempUser = get_user_by( 'login', $username );
+
+	$cap = $wpdb->prefix . "capabilities";
+	if ( $tempUser && array_key_exists( ABSPRIVACY_ROLEREF, $user->$cap ) ) {  //if the user's role is listed as "unapproved"
+		$user = new WP_Error( 'unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved.") );
+		add_filter( 'shake_error_codes', 'abpr_add_error_code' );	//make the login box shake
+		remove_action( 'authenticate', 'wp_authenticate_username_password', 20 );	//prevent authentication of user
+	}
 	
 	return $user;
 }
