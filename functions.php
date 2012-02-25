@@ -43,7 +43,7 @@ function abpr_optionsPage(){
    		$options[ 'member_lockdown' ] = trim( $_POST[ 'member_lockdown' ],'{}' );
    		$options[ 'redirect_page' ] = trim( $_POST[ 'redirect_page' ],'{}' );
    		$options[ 'allowed_pages' ] = trim( $_POST[ 'allowed_pages' ],'{}' );
-   		$options[ 'admin_block' ] = trim( $_POST[ 'admin_block' ], '{}' );
+   		$options[ 'admin_block' ] = isset($_POST['admin_block']) ? trim( $_POST[ 'admin_block' ], '{}' ) : null;
    		$options[ 'rss_control' ] = trim( $_POST[ 'rss_control' ], '{}' );
    		$options[ 'rss_characters' ] = trim( $_POST[ 'rss_characters' ], '{}' );
    		$options[ 'members_only_page' ] = trim( $_POST[ 'members_only_page' ], '{}' );
@@ -838,7 +838,7 @@ function abpr_authenticateUser( $user, $username, $password ){
 	$tempUser = get_user_by( 'login', $username );
 
 	$cap = $wpdb->prefix . "capabilities";
-	if ( $tempUser && array_key_exists( ABSPRIVACY_ROLEREF, $user->$cap ) ) {  //if the user's role is listed as "unapproved"
+	if ( $tempUser && array_key_exists( ABSPRIVACY_ROLEREF, $tempUser->$cap ) ) {  //if the user's role is listed as "unapproved"
 		$user = new WP_Error( 'unapproved', __("<strong>ERROR</strong>: The administrator of this site must approve your account before you can login. You will be notified via email when it has been approved.") );
 		add_filter( 'shake_error_codes', 'abpr_add_error_code' );	//make the login box shake
 		remove_action( 'authenticate', 'wp_authenticate_username_password', 20 );	//prevent authentication of user
