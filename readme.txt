@@ -2,8 +2,8 @@
 Contributors: johnkolbert, ericmann
 Tags: privacy, registration, moderation
 Requires at least: 3.0
-Tested up to: 3.3.1
-Stable tag: 2.0.7
+Tested up to: 3.6
+Stable tag: 2.1
 License: GPLv2
 
 New user moderation, site lock-down or members area, users can chose their own password and must enter their name when registering.
@@ -40,6 +40,10 @@ Visit the plugins homepage
 4. Approval is easy: click the link in the approval pending email and press approve
 
 == Changelog ==
+
+= 2.1 =
+* Add I18N
+* Fix some deprecation notices
 
 = 2.0.7 =
 * fixed bug in authentication.
