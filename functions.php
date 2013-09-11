@@ -411,7 +411,7 @@ function abpr_optionsPage() {
 						</p>
 
 						<p style="text-align: center; font-size: 1.2em;">
-							<?php echo sprintf( __( 'Plugin maintained by <a href="%" title="Eric Mann">Eric Mann</a>', 'absprivacy' ), 'http://eamann.com' ); ?><br/>
+							<?php echo sprintf( __( 'Plugin maintained by <a href="%s" title="Eric Mann">Eric Mann</a>', 'absprivacy' ), 'http://eamann.com' ); ?><br/>
 							<span style="font-size: 0.8em;">
 								<a href="http://www.twitter.com/ericmann" title="<?php _e( 'Follow Me!', 'absprivacy' ); ?>"><?php _e( 'Follow me on Twitter!', 'absprivacy' ); ?></a><br/>
 							</span>
